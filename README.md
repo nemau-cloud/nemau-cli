@@ -4,11 +4,64 @@
 instances, networks, load balancers, block and object storage, Kubernetes
 clusters and DNS zones.
 
-Building it requires Go 1.27 or later.
-
 ## Installation
 
-Install it with Go:
+Each [release](https://github.com/nemau-cloud/nemau-cli/releases) ships a
+static binary for each platform, named `nemau-<os>-<arch>`, with a `SHA256SUMS`
+file. The binaries need no system library. The commands below download the
+latest release.
+
+### macOS
+
+On an Apple silicon Mac (M1 and later):
+
+```sh
+curl -fLO https://github.com/nemau-cloud/nemau-cli/releases/latest/download/nemau-darwin-arm64
+chmod +x nemau-darwin-arm64
+sudo mv nemau-darwin-arm64 /usr/local/bin/nemau
+nemau --version
+```
+
+On an Intel Mac, replace `arm64` with `amd64`.
+
+The binaries are not signed by Apple. A file downloaded with `curl` runs as is.
+A file downloaded with a browser is blocked by Gatekeeper on first launch:
+remove the quarantine attribute before moving it.
+
+```sh
+xattr -d com.apple.quarantine nemau-darwin-arm64
+```
+
+### Linux
+
+On x86-64:
+
+```sh
+curl -fLO https://github.com/nemau-cloud/nemau-cli/releases/latest/download/nemau-linux-amd64
+curl -fLO https://github.com/nemau-cloud/nemau-cli/releases/latest/download/SHA256SUMS
+sha256sum -c SHA256SUMS --ignore-missing
+sudo install -m 0755 nemau-linux-amd64 /usr/local/bin/nemau
+nemau --version
+```
+
+On ARM64, replace `amd64` with `arm64`.
+
+### Windows
+
+In PowerShell:
+
+```powershell
+$dir = "$env:LOCALAPPDATA\Programs\nemau"
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+Invoke-WebRequest -Uri https://github.com/nemau-cloud/nemau-cli/releases/latest/download/nemau-windows-amd64.exe -OutFile "$dir\nemau.exe"
+[Environment]::SetEnvironmentVariable("Path", "$([Environment]::GetEnvironmentVariable('Path', 'User'));$dir", "User")
+```
+
+Open a new terminal, then run `nemau --version`.
+
+### From source
+
+Building requires Go 1.27 or later. Install it with Go:
 
 ```sh
 go install github.com/nemau-cloud/nemau-cli/cmd/nemau@latest
